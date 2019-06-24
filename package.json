@@ -33,6 +33,9 @@
   ],
   "author": "Betanyeli Bravo",
   "license": "ISC",
+  "bin": {
+    "md-links": "index.js"
+  },
   "bugs": {
     "url": "https://github.com/betanyeli/SCL009-md-links/issues"
   },

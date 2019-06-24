@@ -1,109 +1,63 @@
-// module.exports = () => {
-//   ...
-// };
-let procesoLento = new Promise((resolve, reject) => {
-  let datos = {};
-  //...
-  //muchas lineas de código
-  //...
-  if (error) {
-    //uh oh, las cosas no salieron tan bien
-    reject(new Error('Fallamos, lo siento'));
-  }
-  //...
-  resolve(datos);
-});
+#!/usr/bin/env node
+//require('../')()
+const fs = require('fs'); // leo los archivos
+const marked = require('marked'); // extraigo los links y los meto en array
+const route = require('path'); // ruta de mi archivo
+const fileHound = require('filehound');
+//let route = process.argv[2] //route
+// let optionUser = process.argv[3] testing
 
-//fab
-const fs = require('fs');
-const pathNode = require('path');
-const marked = require('marked');
-const fetch = require('node-fetch');
-
-const markdownLinkExtractor = (markdown)=>{
-  var links = [];
-
-  var renderer = new marked.Renderer();
-
-  renderer.link = function (href, title, text) {
-      links.push({
-        href: href,
-        text: text
-      });
-  };
  
-  marked(markdown, { renderer: renderer });
+//  is absolute method y resolve pa convdertir en absolute, process argv
 
-  return links;
-};
-
-const mdLinks = (userPath, options={validate:true})=>{
-  const thePromise = new Promise((resolve, reject)=>{
-    const thePath = pathNode.resolve(userPath);
-    fs.lstat(thePath, (error, stats)=>{ // Asynchronous lstat(2). The callback gets two arguments (err, stats) where stats is a fs.Stats object. lstat() is identical to stat(), except that if path is a symbolic link, then the link itself is stat-ed, not the file that it refers to.
-      if(error){
-        return reject(error);
-      }
-      if(stats.isFile()){ // Returns true if the fs.Stats object describes a regular file.
-        fs.readFile(thePath,'utf-8', (error, file)=>{
-          if(error){
-            return reject(error);
+// Paso como parámetro la ruta absoluta donde buscará
+const readLinks = (path) =>{
+      fs.readFile(path,"utf8", (err,data) =>{ // quita esto de aquí
+        if(err){
+            throw err;
           }
-          let links = markdownLinkExtractor(file);
-          links = links.map(link =>{
-            link.file = thePath;
-            return link;
-          });
-          return resolve(links);
-        });
-      }else if(stats.isDirectory()){ //Returns true if the fs.Stats object describes a file system directory.
-        fs.readdir(thePath, (error, dirContents)=>{
-          const promises = dirContents.map(theFile => {
-            return mdLinks(`${thePath}${pathNode.sep}${theFile}`, options);
-          });
-          Promise.all(promises)
-            .then(theResults => {
-              return resolve(theResults.reduce((prev, elem)=> prev.concat(elem), []));
-            });
-        });
-      }else{
-        resolve([]);
-      }
-    });
-  });
+          console.log("Solo los links de ese archivo", data);
+          let readLinks =[];
+      
+          const renderer = new marked.Renderer();
+      
+          renderer.link = function(href, title, text){
+      
+            readLinks.push({
+              
+              href:href,
+              text:text,
+              //file:path
+            
+            })
+      
+          }
+          marked(data, {renderer:renderer})
+          console.log("Links pusheados en array", readLinks)
+          
+    }) 
+   
+        } //Fin función readLinks
+    console.log("readLinksConsole", readLinks('./prueba.md'));
+    
 
-  if(options.validate){
-    return thePromise
-      .then((links)=>{
-        const theFetchs = links.map(link => {
-          return new Promise((resolve, reject)=>{
-            fetch(link.href)
-              .then((resp)=>{
-                if(resp.ok){
-                  link.status = 'OK';
-                  resolve(link);
-                }else{
-                  link.status = 'FAIL';
-                  resolve(link);
-                }
-              })
-              .catch((fetchError)=>{
-                link.status = 'FAIL';
-                resolve(link);
-              });
-          });
-        });
+ //función que me extraerá los md de un directorio
+const readDirectory = 
+    fileHound.create() //sólo lee directorios
+    .discard('node_modules')
+    .paths('./testing')
+    .ext('md')
+    .find();
+    readDirectory.then(console.log)
 
-        return Promise.all(theFetchs)
-      });
-  }else{
-    return thePromise;
-  }
+//Process argv
+console.log("process arvg", process.argv);
+process.argv.forEach((val, index) => {
+console.log( "arvg", `${index}: ${val}`);
+
+})
+
+const mdLinks = (path, options) => {
+
 }
-
-if(require.main === module){
-  mdLinks(process.argv[2])
-    .then(console.log);
-}
-
 module.exports = mdLinks;
