@@ -19,3 +19,9 @@ const readfilepromise = readFileAsaPromise (path)
 // process arv PESCA DEL DOS EN ADELANTE. 2 es la ruta, 3 es el validate o stats
 let validate = false;
 let stats = false;
+
+1 leer 
+3 leer archivos
+5
+8
+13
