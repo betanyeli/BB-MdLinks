@@ -1,13 +1,10 @@
 #!/usr/bin/env node
 const fs = require('fs'); // leo los archivos
 const marked = require('marked'); // extraigo los links y los meto en array
-//const path = require('path'); // ruta de mi archivo
 const fileHound = require('filehound'); // read directory
 const fetch = require('node-fetch'); //links status
 let commandUser = []; //array process vacío.
 let links = [];
-let urlArray = []; //Array de links del fetch
-let urlObject = {}; //Objects del array de links del fetch
 
 
 //Process argv
@@ -16,7 +13,7 @@ let urlObject = {}; //Objects del array de links del fetch
 process.argv.forEach((val, index) => { // no quitar val!
   commandUser.push(process.argv[index])
   });
-  console.log("command", commandUser);
+  //console.log("command", commandUser);
 
 /*ProcessArvg position*/ 
 fs.stat(commandUser[2], (error, stats) => {
@@ -28,8 +25,8 @@ fs.stat(commandUser[2], (error, stats) => {
     } if (stats.isDirectory()) {
     readRoute(commandUser[2]);
     }
-  // console.log("isFile", stats.isFile());
-  // console.log("isDirectory", stats.isDirectory());
+  console.log("isFile", stats.isFile());
+  console.log("isDirectory", stats.isDirectory());
 });
 
 // Paso como parámetro la ruta absoluta donde buscará
@@ -41,7 +38,7 @@ const readLinks = (files) => {
     if (err) {
       throw err;
     }
-    console.log("Solo los links de ese archivo", data);
+   //console.log("Solo los links de ese archivo", data);
 
     const renderer = new marked.Renderer();
 
@@ -57,7 +54,7 @@ const readLinks = (files) => {
 
     }
     marked(data, { renderer: renderer })
-    console.log("Links pusheados en array", links)
+   // console.log("Links pusheados en array", links)
 
     scanLinks(links)
   })
@@ -76,7 +73,7 @@ const readRoute = (route) => {
     readDirectory.then(read => {
     //console.log(read)
       read.forEach((file) =>{
-      console.log(file)
+      //console.log(file)
       readLinks(file) // Llamo a readlinks
     
     });
@@ -87,22 +84,22 @@ const readRoute = (route) => {
 
 // fetch
 const scanLinks = (url) => {
+  let urlArray = []; //Array de links del fetch
+  //urlArray
   url.forEach(element => {
-    fetch(element.href)
+    let urlObject = {}; //Objects del array de links del fetch
+    //urlObject
+    fetch(element)
       .then(res => {
-        console.log(res.ok);
-        // console.log(res.status);
-        // console.log(res.statusText);
-  
-      //   console.log(
-      //     "| True or false?: |" + res.ok +
-      //     "| Error code: |" + res.status + 
-      //     "| It's OK?: |" + res.statusText);
-
+        urlObject.href = element.href;
+        urlObject.ok = res.ok;
+        urlObject.status = res.status;
+        urlObject.statusText = res.statusText;
+        urlArray.push(urlObject);
+        console.log(urlArray)
       });
-
-  });
-
+      return urlArray;
+  }); // fin foreach
+ 
  
 }//fin función scanLinks
-

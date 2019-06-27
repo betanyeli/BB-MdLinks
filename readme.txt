@@ -25,3 +25,13 @@ let stats = false;
 5
 8
 13
+
+// lo que quiera devolver lo pongo en resolve y reject
+y el then llamo a la funcion y me retorna un valor.
+
+que hay q testeat?
+el then.
+////////////////////////////////
+User escribe en terminal 
+md-links ./ --v --stats
+¿Q hago primero? lo q el usuario puso, o sea leerlo.
