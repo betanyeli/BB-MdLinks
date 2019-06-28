@@ -4,10 +4,11 @@ const marked = require('marked'); // extraigo los links y los meto en array
 const fileHound = require('filehound'); // read directory
 const path = require('path');
 const fetch = require('node-fetch'); //links status
-const colors = require('colors');
+let colors = require('colors');
 //const mdLinks = require('./md-links')
 let commandUser = []; //array process vacío.
 let links = [];
+
 
 // let options = {
 //   stats: false,
@@ -76,7 +77,7 @@ const readLinks = (files) => {
 
 /*F(x) que lee directorios, posteriormente llama a readLinks*/
 const readRoute = (route) => {
-    fileHound.create() //sólo lee directorios
+  return fileHound.create() //sólo lee directorios
       .discard('node_modules')
       .paths(route)
       .ext('md')
@@ -96,7 +97,6 @@ const readRoute = (route) => {
 
 // fetch
 const validateLinks = (url) => {
-
      //urlArray
     url.forEach(element => {
       //urlObject
