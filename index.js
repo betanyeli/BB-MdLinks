@@ -2,9 +2,17 @@
 const fs = require('fs'); // leo los archivos
 const marked = require('marked'); // extraigo los links y los meto en array
 const fileHound = require('filehound'); // read directory
+const path = require('path');
 const fetch = require('node-fetch'); //links status
+const colors = require('colors');
+//const mdLinks = require('./md-links')
 let commandUser = []; //array process vacío.
 let links = [];
+
+// let options = {
+//   stats: false,
+//   validate: false,
+// }
 
 
 //Process argv
@@ -15,29 +23,33 @@ process.argv.forEach((val, index) => { // no quitar val!
   });
   //console.log("command", commandUser);
 
-/*ProcessArvg position*/ 
-fs.stat(commandUser[2], (error, stats) => {
+/*Si es un archivo o ruta, llama a la función correspondiente*/ 
+const fileOrDirectory = (path) => {
+  fs.stat(path, (error, stats) => {
 
     if (error) {
-    console.log("error stats", error);
+    console.log("error stats".red, error);
     } if (stats.isFile()) {
-    readLinks(commandUser[2]);
+    readLinks(path);
     } if (stats.isDirectory()) {
-    readRoute(commandUser[2]);
+    readRoute(path);
     }
   console.log("isFile", stats.isFile());
   console.log("isDirectory", stats.isDirectory());
 });
 
-// Paso como parámetro la ruta absoluta donde buscará
+}
+fileOrDirectory(commandUser[2])
+
+
+
+/*F(x) para leer links convertida en promesa */ 
 const readLinks = (files) => {
-  //new Promise ((resolve, reject) => {
+  new Promise ((resolve, reject) => {
 
   fs.readFile(files, "utf8", (err, data) => {
-
-    if (err) {
-      throw err;
-    }
+  
+    err ? reject(err) : resolve(links); 
    //console.log("Solo los links de ese archivo", data);
 
     const renderer = new marked.Renderer();
@@ -47,59 +59,57 @@ const readLinks = (files) => {
       links.push({
         href: href,
         text: text,
-        //title:title
-        //file:path
+        title:title
+       
 
       });
 
-    }
+    } //fin rendered
     marked(data, { renderer: renderer })
-   // console.log("Links pusheados en array", links)
-
-    scanLinks(links)
+    validateLinks(links)
+    //resolve(links)
+  }) //fin readFiles
   })
-
+ 
 } //Fin función readLinks
 
 
-//función que me extraerá los md de un directorio
+/*F(x) que lee directorios, posteriormente llama a readLinks*/
 const readRoute = (route) => {
-  const readDirectory =
     fileHound.create() //sólo lee directorios
       .discard('node_modules')
       .paths(route)
       .ext('md')
       .find()
-    readDirectory.then(read => {
-    //console.log(read)
+      .then(read => {
       read.forEach((file) =>{
-      //console.log(file)
       readLinks(file) // Llamo a readlinks
     
-    });
-  });
-  // readDirectory.then(console.log);
-  //console.log("readDirectory", readDirectory)
+    })
+  })
+  .catch(err=>{
+    console.log(err)
+  })
+  
 }
 
+
 // fetch
-const scanLinks = (url) => {
-  let urlArray = []; //Array de links del fetch
-  //urlArray
-  url.forEach(element => {
-    let urlObject = {}; //Objects del array de links del fetch
-    //urlObject
-    fetch(element)
-      .then(res => {
-        urlObject.href = element.href;
-        urlObject.ok = res.ok;
-        urlObject.status = res.status;
-        urlObject.statusText = res.statusText;
-        urlArray.push(urlObject);
-        console.log(urlArray)
-      });
-      return urlArray;
-  }); // fin foreach
- 
- 
-}//fin función scanLinks
+const validateLinks = (url) => {
+
+     //urlArray
+    url.forEach(element => {
+      //urlObject
+      fetch(element)
+        .then(res => {
+          let urlArray = []; //Array de links del fetch
+          let urlObject = {}; //Objects del array de links del fetch
+          urlObject.url = res.url;
+          urlObject.ok = res.ok;
+          urlObject.status = res.status;
+          urlObject.statusText = res.statusText;
+          urlArray.push(urlObject);
+          console.log(urlArray)
+        })     
+    }); // fin foreach
+}//fin función validateLinks
