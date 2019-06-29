@@ -31,6 +31,7 @@ const readLinks = (files) => {
   
     err ? reject(err) : resolve(links); 
    //console.log("Solo los links de ese archivo", data);
+   links = [];
 
     const renderer = new marked.Renderer();
 
@@ -74,7 +75,7 @@ const readRoute = (route) => {
 }
 
 
-// fetch
+// // fetch
 const validateLinks = (url) => {
   //urlArray
  url.forEach(element => {
@@ -83,7 +84,7 @@ const validateLinks = (url) => {
      .then(res => {
        let urlArray = []; //Array de links del fetch
        let urlObject = {}; //Objects del array de links del fetch
-       urlObject.url = res.url;
+       urlObject.url = res.url
        urlObject.ok = res.ok;
        urlObject.status = res.status;
        urlObject.statusText = res.statusText;
