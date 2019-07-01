@@ -4,21 +4,42 @@ const marked = require('marked'); // extraigo los links y los meto en array
 const fileHound = require('filehound'); // read directory
 const path = require('path');
 const fetch = require('node-fetch'); //links status
-let colors = require('colors');
+const chalk = require('chalk');
 let links = [];
 
+
 /*Si es un archivo o ruta, llama a la función correspondiente*/ 
-const mdLinks = (path) => {
-  fs.stat(path, (error, stats) => {
-    if (error) {
-    console.log("error stats".red, error);
-    } if (stats.isFile()) {
-    readLinks(path);
-    } if (stats.isDirectory()) {
-    readRoute(path);
-    }
-});
-//Acá va la lógica de las options
+const mdLinks = (path, options) => {
+  return new Promise ((resolve, reject) => {
+    fs.stat(path, (error, stats) => {
+
+      if (error) {
+        reject(error)   
+        
+        } if (stats.isFile()) {
+          readLinks(path)
+          .then(url => {
+           resolve(validateLinks(url))
+           //console.log(validateLinks(url)) //return promise pending! fix this bug!
+              
+                
+              })
+          
+     
+      
+      } if (stats.isDirectory()) {
+      resolve(readRoute(path))
+  
+      } 
+          
+          //console.log(url)
+       
+
+  });
+ 
+  });
+  
+  
 
 }
 
@@ -30,7 +51,7 @@ const readLinks = (files) => {
   fs.readFile(files, "utf8", (err, data) => {
   
     err ? reject(err) : resolve(links); 
-   //console.log("Solo los links de ese archivo", data);
+   console.log("Solo los links de ese archivo", data);
    links = [];
 
     const renderer = new marked.Renderer();
@@ -40,19 +61,22 @@ const readLinks = (files) => {
       links.push({
         href: href,
         text: text,
-        title:title
+        //title:title
        
 
       });
+      //console.log("links encontrados", links)
 
     } //fin rendered
     marked(data, { renderer: renderer })
     validateLinks(links)
+    statsUrl(links)
     //resolve(links)
   }) //fin readFiles
   })
  
 } //Fin función readLinks
+
 
 
 /*F(x) que lee directorios, posteriormente llama a readLinks*/
@@ -65,6 +89,7 @@ const readRoute = (route) => {
         .find()
             readDirectory.then(read => {
                 read.forEach((file) =>{
+                  //console.log(file)
                     readLinks(file) // Llamo a readlinks
             })
         })
@@ -78,20 +103,51 @@ const readRoute = (route) => {
 // // fetch
 const validateLinks = (url) => {
   //urlArray
- url.forEach(element => {
-   //urlObject
-   fetch(element)
-     .then(res => {
-       let urlArray = []; //Array de links del fetch
-       let urlObject = {}; //Objects del array de links del fetch
-       urlObject.url = res.url
-       urlObject.ok = res.ok;
-       urlObject.status = res.status;
-       urlObject.statusText = res.statusText;
-       urlArray.push(urlObject);
-       console.log(urlArray)
-     })     
- }); // fin foreach
+ 
+   return new Promise((resolve, reject) => {
+    
+    url.forEach(element => {
+      
+  fetch(element)
+  .then(res => { 
+                        // let urlArray= [];
+                        // urlArray.push({
+                        //   Url: res.url,
+                        //   Text: element.text,
+                        //   Status:res.status,
+                        //   InfoStatus: res.statusText
+                        // })
+                        element.ok = res.ok;
+                        element.status = res.status;
+                        element.statusText = res.statusText;
+                        resolve(element)
+                        console.log("Url encontrada", element)
+                       
+                        //resolve(urlArray)
+
+                        //console.log("Url encontrada!: ", urlArray);
+  })  
+  .catch((err)=> {
+    reject(err)
+})           
+}) // fin forEach
+   })
+
 }//fin función validateLinks
 
+
+/*Función que muestra Links totales y únicos*/
+const statsUrl = (url) => {
+  const urlCounter = url.map(element => element.href);
+  const brokenLinks = url.filter(el => el.status < 0 || el.status > 400);
+  //const totalLinks = urlCounter.length;
+  const uniqueLinks = [...new Set(urlCounter)].length;
+  console.log(`Links Totales:  ${chalk.bold.blue(urlCounter.length)}.`)
+  console.log(`Links únicos:  ${chalk.bold.green(uniqueLinks)}.`)
+  console.log(`Links rotos:  ${chalk.red(brokenLinks).length}.`)
+}
+
 module.exports= mdLinks;
+//mdLinks;
+// module.exports= validateLinks;
+// module.exports= statsUrl;
