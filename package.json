@@ -1,5 +1,5 @@
 {
-  "name": "md-links",
+  "name": "bb-mdlinks",
   "version": "0.1.6",
   "dependencies": {
     "chalk": "^2.4.2",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/betanyeli/SCL009-md-links.git"
+    "url": "git+https://github.com/betanyeli/BB-MdLinks.git"
   },
   "keywords": [
     "markdown",
