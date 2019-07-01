@@ -25,7 +25,8 @@ Se espera poder implementar la funcionalidad de las opciones `--validate` y `--s
 
 # Instrucciones.
 
-1. Instalar dependencia desde la terminal de Git ó de tu editor de texto con el comando `npm install betanyeli/BB-MdLinks`.
+1. Instalar dependencia desde la terminal de Git ó de tu editor de texto con el comando `npm install betanyeli/BB-MdLinks` ó desde 
+[NPM](https://www.npmjs.com/package/bb-mdlinks) con ` npm i bb-mdlinks `
 ![Primer paso](img/InstallNpm.JPG).
 2. Ejecutar el comando `md-links` seguido del directorio ó archivo que desee leer.
 ![Segundo paso](img/file.JPG)
