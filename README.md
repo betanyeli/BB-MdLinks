@@ -1,4 +1,4 @@
-# BB-MDLinks versión BETA
+# BB-MDLinks versión BETA :computer:
 ![BB](img/logo.JPG)
 
 ## Preámbulo
@@ -19,7 +19,7 @@ algunas estadísticas.
 
 ### Versión 0.1.6 [beta]
 
-En esta versión sólo está funcional la lectura de archivos con extensión "md", cuyo resultado arroja un Objeto el cuál contiene las Url encontradas en el archivo ó aquellos vínculos que se encontraran en un directorio con archivos "md". Además de esto, se visualizarán las estadísticas correspondientes al *Total de links encontrados* , *Links únicos*, y *Links Rotos*.
+:warning: En esta versión sólo está funcional la lectura de archivos con extensión "md", cuyo resultado arroja un Objeto el cuál contiene las Url encontradas en el archivo ó aquellos vínculos que se encontraran en un directorio con archivos "md". :warning: Además de esto, se visualizarán las estadísticas correspondientes al *Total de links encontrados* , *Links únicos*, y *Links Rotos*.
 El usuario deberá asegurarse de colocar la ruta correcta al directorio o al archivo.
 Se espera poder implementar la funcionalidad de las opciones `--validate` y `--stats` para darle mayor autonomía al usuario respecto a la información que desea mostrar.
 
@@ -28,7 +28,7 @@ Se espera poder implementar la funcionalidad de las opciones `--validate` y `--s
 1. Instalar dependencia desde la terminal de Git ó de tu editor de texto con el comando `npm install betanyeli/BB-MdLinks` ó desde 
 [NPM](https://www.npmjs.com/package/bb-mdlinks) con ` npm i bb-mdlinks `
 ![Primer paso](img/InstallNpm.JPG).
-2. Ejecutar el comando `md-links` seguido del directorio ó archivo que desee leer.
+2. Ejecutar el comando `md-links` seguido del directorio ó archivo que desee leer. :file_folder:
 ![Segundo paso](img/file.JPG)
 ![Directorio](img/directory.JPG)
 
