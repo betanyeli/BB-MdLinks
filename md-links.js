@@ -31,6 +31,9 @@ const mdLinks = (path, options) => {
       resolve(readRoute(path))
   
       } 
+      if(!stats.isDirectory()){
+        console.log("Debes introducir un directorio / archivo válido")
+      }
           
           //console.log(url)
        
