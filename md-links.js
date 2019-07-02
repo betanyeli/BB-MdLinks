@@ -9,43 +9,47 @@ let links = [];
 
 
 /*Si es un archivo o ruta, llama a la función correspondiente*/ 
-const mdLinks = (path, options) => {
+const mdLinks = (path, options={}) => {
+  // if(path === false || options === false){
+  //   return console.log("INGRESA UNA RUTA VÁLIDA!")
+  // }
+  
   return new Promise ((resolve, reject) => {
     fs.stat(path, (error, stats) => {
-
       if (error) {
-        reject(error)   
-        
+        throw (error)   
+
         } if (stats.isFile()) {
-          readLinks(path)
-          .then(url => {
-           resolve(validateLinks(url))
-           //console.log(validateLinks(url)) //return promise pending! fix this bug!
-              
-                
-              })
+          readLinks(path).then(url=>{
+            console.log("-------------------Resultados de búsqueda------------------*")
+            console.log(url)
+            console.log("------------------------------------------------------------")
+            resolve(url)
+          })
           
-     
+           //console.log(validateLinks(url)) //return promise pending! fix this bug!
+          
       
       } if (stats.isDirectory()) {
-      resolve(readRoute(path))
-  
+        resolve(readRoute(path))
+
       } 
-      if(!stats.isDirectory()){
-        console.log("Debes introducir un directorio / archivo válido")
-      }
-          
-          //console.log(url)
-       
 
   });
+
+  if (options.validate && options.stats){
+    readLinks(path)
+    
+    
+  } if(options.validate){
+    return validateLinks(path)
+  } if(options.stats){
+    return statsUrl(path)
+  } 
  
-  });
+ }); // fin promise
   
-  
-
 }
-
 
 /*F(x) para leer links convertida en promesa */ 
 const readLinks = (files) => {
@@ -53,7 +57,9 @@ const readLinks = (files) => {
 
   fs.readFile(files, "utf8", (err, data) => {
   
-    err ? reject(err) : resolve(links); 
+    if (err){
+      reject(err)
+    }
    console.log("Solo los links de ese archivo", data);
    links = [];
 
@@ -68,13 +74,14 @@ const readLinks = (files) => {
        
 
       });
-      //console.log("links encontrados", links)
+      console.log("links encontrados", links)
 
     } //fin rendered
     marked(data, { renderer: renderer })
     validateLinks(links)
+    
+    resolve(links)
     statsUrl(links)
-    //resolve(links)
   }) //fin readFiles
   })
  
@@ -94,6 +101,9 @@ const readRoute = (route) => {
                 read.forEach((file) =>{
                   //console.log(file)
                     readLinks(file) // Llamo a readlinks
+                      .then(res=>{
+                        console.log("readRoute", res)
+                      })
             })
         })
             .catch(err=>{
@@ -113,20 +123,27 @@ const validateLinks = (url) => {
       
   fetch(element)
   .then(res => { 
-                        // let urlArray= [];
-                        // urlArray.push({
-                        //   Url: res.url,
-                        //   Text: element.text,
-                        //   Status:res.status,
-                        //   InfoStatus: res.statusText
-                        // })
-                        element.ok = res.ok;
-                        element.status = res.status;
-                        element.statusText = res.statusText;
-                        resolve(element)
-                        console.log("Url encontrada", element)
+                        let urlArray= [];
+                        urlArray.push({
+                          Url: res.url,
+                          Text: element.text,
+                          Status:res.status,
+                          InfoStatus: res.statusText
+                        })
+                                    // element.ok = res.ok;
+                                    // element.status = res.status;
+                                    // element.statusText = res.statusText;
+                                    // resolve(element)
+                        console.log(chalk.bgCyan("----------------------------Link-----------------------------"))
+                        console.log("Url ==>: ", chalk.bold.blue(res.url))
+                        console.log(chalk.bgGreen("-------------------Información de este link------------------"))
+                        
+                        console.log("Text =>: ", chalk.bold.magenta(element.text))
+                        console.log("Código de respuesta ==>:", chalk.bold.red(res.status))
+                        console.log("Info ==>: ", chalk.bold.yellow(res.statusText))
+                        console.log("----------------------------Fin------------------------------")
                        
-                        //resolve(urlArray)
+                        resolve(urlArray)
 
                         //console.log("Url encontrada!: ", urlArray);
   })  
