@@ -7,46 +7,56 @@ const fetch = require('node-fetch'); //links status
 const chalk = require('chalk');
 let links = [];
 
+const readRoute = (path) => {
+  const readDirectory = 
+  fileHound.create() //sólo lee directorios
+  .discard('node_modules')
+  .paths(path)
+  .ext('md')
+  .find()
+  readDirectory.then(res=> console.log(res));
+}
+
 
 /*Si es un archivo o ruta, llama a la función correspondiente*/ 
 const mdLinks = (path, options={}) => {
-  // if(path === false || options === false){
-  //   return console.log("INGRESA UNA RUTA VÁLIDA!")
-  // }
-  
   return new Promise ((resolve, reject) => {
+    
+    if(!path || !options ){
+      return console.log("INGRESA UNA RUTA VÁLIDA!")
+    }
+                  // if (options.validate && options.stats){
+                  //   readLinks(path)
+                  // } if(options.validate){
+                  //   return validateLinks(path)
+                  // } if(options.stats){
+                  //   return statsUrl(path)
+                  // } 
+   
     fs.stat(path, (error, stats) => {
       if (error) {
-        throw (error)   
+        reject (error)   
 
-        } if (stats.isFile()) {
+        } 
+      if (stats.isFile()) {
           readLinks(path).then(url=>{
             console.log("-------------------Resultados de búsqueda------------------*")
             console.log(url)
             console.log("------------------------------------------------------------")
+            
+            // validateLinks(url)
+            // statsUrl(url)
             resolve(url)
+            
           })
-          
-           //console.log(validateLinks(url)) //return promise pending! fix this bug!
           
       
       } if (stats.isDirectory()) {
-        resolve(readRoute(path))
-
+        readRoute(path)
       } 
 
   });
 
-  if (options.validate && options.stats){
-    readLinks(path)
-    
-    
-  } if(options.validate){
-    return validateLinks(path)
-  } if(options.stats){
-    return statsUrl(path)
-  } 
- 
  }); // fin promise
   
 }
@@ -60,7 +70,7 @@ const readLinks = (files) => {
     if (err){
       reject(err)
     }
-   console.log("Solo los links de ese archivo", data);
+   //console.log("Solo los links de ese archivo", data);
    links = [];
 
     const renderer = new marked.Renderer();
@@ -74,14 +84,12 @@ const readLinks = (files) => {
        
 
       });
-      console.log("links encontrados", links)
+      //console.log("links encontrados", links)
 
     } //fin rendered
     marked(data, { renderer: renderer })
-    validateLinks(links)
-    
+
     resolve(links)
-    statsUrl(links)
   }) //fin readFiles
   })
  
@@ -90,30 +98,36 @@ const readLinks = (files) => {
 
 
 /*F(x) que lee directorios, posteriormente llama a readLinks*/
-const readRoute = (route) => {
-    const readDirectory = 
-        fileHound.create() //sólo lee directorios
-        .discard('node_modules')
-        .paths(route)
-        .ext('md')
-        .find()
-            readDirectory.then(read => {
-                read.forEach((file) =>{
-                  //console.log(file)
-                    readLinks(file) // Llamo a readlinks
-                      .then(res=>{
-                        console.log("readRoute", res)
-                      })
-            })
-        })
-            .catch(err=>{
-            console.log(err)
-    })
+// const readRoute = (route) => {
+//     const readDirectory = 
+//         fileHound.create() //sólo lee directorios
+//         .discard('node_modules')
+//         .paths(route)
+//         .ext('md')
+//         .find()
+//              readDirectory.then(read=>{
+//     //           //console.log("test", read)
+//                 read.forEach((file) =>{
+//                   //console.log("test", file)
+//                     readLinks(file) // Llamo a readlinks
+//                       .then(res=>{
+//                         // validateLinks(res)
+//                         // statsUrl(res)
+//                         console.log("readRoute", res)
+//                       })
+//             })
+//         })
+//             .catch(err=>{
+//             console.log(err)
+//     })
 
-}
+// }
+
 
 
 // // fetch
+ 
+
 const validateLinks = (url) => {
   //urlArray
  
@@ -130,10 +144,7 @@ const validateLinks = (url) => {
                           Status:res.status,
                           InfoStatus: res.statusText
                         })
-                                    // element.ok = res.ok;
-                                    // element.status = res.status;
-                                    // element.statusText = res.statusText;
-                                    // resolve(element)
+
                         console.log(chalk.bgCyan("----------------------------Link-----------------------------"))
                         console.log("Url ==>: ", chalk.bold.blue(res.url))
                         console.log(chalk.bgGreen("-------------------Información de este link------------------"))
@@ -145,7 +156,7 @@ const validateLinks = (url) => {
                        
                         resolve(urlArray)
 
-                        //console.log("Url encontrada!: ", urlArray);
+                        
   })  
   .catch((err)=> {
     reject(err)
