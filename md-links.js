@@ -7,32 +7,14 @@ const fetch = require('node-fetch'); //links status
 const chalk = require('chalk');
 let links = [];
 
-const readRoute = (path) => {
-  const readDirectory = 
-  fileHound.create() //sólo lee directorios
-  .discard('node_modules')
-  .paths(path)
-  .ext('md')
-  .find()
-  readDirectory.then(res=> console.log(res));
-}
 
 
 /*Si es un archivo o ruta, llama a la función correspondiente*/ 
 const mdLinks = (path, options={}) => {
   return new Promise ((resolve, reject) => {
-    
     if(!path || !options ){
       return console.log("INGRESA UNA RUTA VÁLIDA!")
     }
-                  // if (options.validate && options.stats){
-                  //   readLinks(path)
-                  // } if(options.validate){
-                  //   return validateLinks(path)
-                  // } if(options.stats){
-                  //   return statsUrl(path)
-                  // } 
-   
     fs.stat(path, (error, stats) => {
       if (error) {
         reject (error)   
@@ -44,8 +26,6 @@ const mdLinks = (path, options={}) => {
             console.log(url)
             console.log("------------------------------------------------------------")
             
-            // validateLinks(url)
-            // statsUrl(url)
             resolve(url)
             
           })
@@ -53,10 +33,37 @@ const mdLinks = (path, options={}) => {
       
       } if (stats.isDirectory()) {
         readRoute(path)
-      } 
+        .then(res=>{
+
+         res.forEach(links=>{
+          resolve(readLinks(links))
+          console.log("-------------------Resultados de búsqueda------------------*")
+          console.log(links)
+          console.log("------------------------------------------------------------")
+
+          
+         })
+
+        })
+      }
 
   });
-
+  
+  
+                if (options.validate && options.stats){
+                  readLinks(path).then(url=>{
+                    console.log("url", url)
+                    validateAndStatsUrl(url)
+                  })
+                } if(options.validate){
+                  readLinks(path).then(url=>{
+                    validateLinks(url)
+                  })
+                } if(options.stats){
+                  readLinks(path).then(url=>{
+                    statsUrl(url)
+                  })
+                } 
  }); // fin promise
   
 }
@@ -88,7 +95,9 @@ const readLinks = (files) => {
 
     } //fin rendered
     marked(data, { renderer: renderer })
-
+    validateLinks(links)
+    statsUrl(links)
+    validateAndStatsUrl(links)
     resolve(links)
   }) //fin readFiles
   })
@@ -98,34 +107,44 @@ const readLinks = (files) => {
 
 
 /*F(x) que lee directorios, posteriormente llama a readLinks*/
-// const readRoute = (route) => {
-//     const readDirectory = 
-//         fileHound.create() //sólo lee directorios
-//         .discard('node_modules')
-//         .paths(route)
-//         .ext('md')
-//         .find()
-//              readDirectory.then(read=>{
-//     //           //console.log("test", read)
-//                 read.forEach((file) =>{
-//                   //console.log("test", file)
-//                     readLinks(file) // Llamo a readlinks
-//                       .then(res=>{
-//                         // validateLinks(res)
-//                         // statsUrl(res)
-//                         console.log("readRoute", res)
-//                       })
-//             })
-//         })
-//             .catch(err=>{
-//             console.log(err)
-//     })
+const readRoute = (route) => {
+    //const readDirectory = 
+        return new Promise((resolve, reject)=>{
+          fileHound.create() //sólo lee directorios
+          .discard('node_modules')
+          .paths(route)
+          .ext('md')
+          .find()
+          .then(res=>{
+           resolve(res)
+          })
+          .catch(err=>{
+            reject(err)
+          })
+        })
+        
 
-// }
+        //      readDirectory.then(read=>{
+        //        console.log("test", read)
+        //         read.forEach((file) =>{
+        //           console.log("test", file)
+        //             readLinks(file) // Llamo a readlinks
+        //               .then(res=>{
+        //                 // validateLinks(res)
+        //                 // statsUrl(res)
+        //                 console.log("readRoute", res)
+        //               })
+        //     })
+        // })
+        //     .catch(err=>{
+        //     console.log(err)
+    //})
+
+}
 
 
 
-// // fetch
+// fetch
  
 
 const validateLinks = (url) => {
@@ -145,14 +164,14 @@ const validateLinks = (url) => {
                           InfoStatus: res.statusText
                         })
 
-                        console.log(chalk.bgCyan("----------------------------Link-----------------------------"))
-                        console.log("Url ==>: ", chalk.bold.blue(res.url))
-                        console.log(chalk.bgGreen("-------------------Información de este link------------------"))
+                        // console.log(chalk.bgCyan("----------------------------Link-----------------------------"))
+                        // console.log("Url ==>: ", chalk.bold.blue(res.url))
+                        // console.log(chalk.bgGreen("-------------------Información de este link------------------"))
                         
-                        console.log("Text =>: ", chalk.bold.magenta(element.text))
-                        console.log("Código de respuesta ==>:", chalk.bold.red(res.status))
-                        console.log("Info ==>: ", chalk.bold.yellow(res.statusText))
-                        console.log("----------------------------Fin------------------------------")
+                        // console.log("Text =>: ", chalk.bold.magenta(element.text))
+                        // console.log("Código de respuesta ==>:", chalk.bold.red(res.status))
+                        // console.log("Info ==>: ", chalk.bold.yellow(res.statusText))
+                        // console.log("----------------------------Fin------------------------------")
                        
                         resolve(urlArray)
 
@@ -173,9 +192,14 @@ const statsUrl = (url) => {
   const brokenLinks = url.filter(el => el.status < 0 || el.status > 400);
   //const totalLinks = urlCounter.length;
   const uniqueLinks = [...new Set(urlCounter)].length;
-  console.log(`Links Totales:  ${chalk.bold.blue(urlCounter.length)}.`)
-  console.log(`Links únicos:  ${chalk.bold.green(uniqueLinks)}.`)
-  console.log(`Links rotos:  ${chalk.red(brokenLinks).length}.`)
+  // console.log(`Links Totales:  ${chalk.bold.blue(urlCounter.length)}.`)
+  // console.log(`Links únicos:  ${chalk.bold.green(uniqueLinks)}.`)
+  // console.log(`Links rotos:  ${chalk.red(brokenLinks).length}.`)
+}
+
+const validateAndStatsUrl = (url) =>{
+  validateLinks(url)
+  statsUrl(url)
 }
 
 module.exports= mdLinks;
