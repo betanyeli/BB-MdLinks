@@ -2,39 +2,51 @@
 const mdLinks = require('./md-links');
 const process = require('process');
 let commandUser = []; //array process vacío.
-const validateLinks = require('./md-links')
-
-
+// const validateLinks = require('./md-links')
+// const statsUrl = require('./md-links')
 process.argv.forEach((val, index) => { //  Val es un parámetro obligatorio.
   commandUser.push(process.argv[index])
 })
 
 
- if( commandUser[3] === '--validate' && commandUser[4] === '--stats' ||  commandUser[3] === '--stats' && commandUser[4] === '--validate'){
+
+
+ if( commandUser[3] === '--validate' && commandUser[4] === '--stats'){
     mdLinks(commandUser[2], {validate:true})
-    //llamar validate y stats
- } if (commandUser[3] === '--validate'){
+    .then(res=>{
+      console.log("Si validate y stats son verdaderos", res)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+    //llamar validate y stats con su then y catch
+ } else if (commandUser[3] === '--validate'){
   mdLinks(commandUser[2], {validate:true})
   .then(res => { 
     //console.log(res) mi array de objetos mdLinks
-    res.forEach((url) => { 
+    
       //validateLinks(url)
-      //console.log("Url si es validate", url)
+      console.log("Si validate es true", res)
 
-    })
+    
   })
   .catch(error => {
     console.log(error)
   })
- } if(commandUser[3] === '--stats'){
+ } else if(commandUser[3] === '--stats'){
   mdLinks(commandUser[2], {validate:false})
   .then(res => {
-    console.log(res)
+    console.log("Si stats is true", res)
     
   })
- } else { commandUser[3] === 0;
-  return mdLinks(commandUser[2], {validate:false})
+  .catch(error => {
+    console.log(error)
+  })
+ } else if  (commandUser.length <= 3){
+  return mdLinks(commandUser[2]) //si el usuario solo escribe el comando y archivo.
   .then(res => { 
-    console.log("without options", res)
+    console.log("Si no hay opción de un coño", res)
     })
- }
+  }
+ 
+  

@@ -11,6 +11,7 @@ let links = [];
 
 /*Si es un archivo o ruta, llama a la función correspondiente*/ 
 const mdLinks = (path, options={}) => {
+  
   return new Promise ((resolve, reject) => {
     if(!path || !options ){
       return console.log("INGRESA UNA RUTA VÁLIDA!")
@@ -22,10 +23,11 @@ const mdLinks = (path, options={}) => {
       if (stats.isFile()) {
           readLinks(path)
           .then(url=>{
+          
             // console.log("-------------------Resultados de búsqueda------------------*")
             // console.log(url)
             // console.log("------------------------------------------------------------")
-            resolve(url) 
+            resolve(url)  // resuelve esto de último!!
           })
           .catch(err=>{
             reject(err)
@@ -119,9 +121,7 @@ const validateLinks = (url) => {
   //urlArray
  
    return new Promise((resolve, reject) => {
-    
-   url.forEach(element => {
-      
+   url.forEach(element => {  
   fetch(element)
   .then(res => { 
     let urlArray= [];
@@ -131,7 +131,8 @@ const validateLinks = (url) => {
                           Status:res.status,
                           InfoStatus: res.statusText
                         })
-
+ 
+//console.log("Links broken", broken)
                         // console.log(chalk.bgCyan("----------------------------Link-----------------------------"))
                         // console.log("Url ==>: ", chalk.bold.blue(res.url))
                         // console.log(chalk.bgGreen("-------------------Información de este link------------------"))
@@ -153,7 +154,7 @@ const validateLinks = (url) => {
    })
 
 }//fin función validateLinks
-module.exports = validateLinks;
+
 
 /*Función que muestra Links totales y únicos*/
 const statsUrl = (url) => {
@@ -165,5 +166,10 @@ const statsUrl = (url) => {
   // console.log(`Links rotos:  ${chalk.red(brokenLinks).length}.`)
 }
 
-
+// const validateStats = (url) => {
+//   //console.log(url)
+//   const brokenLinks =url.filter(el => el.status > 400)
+    
+//   //console.log("brokenLinks", brokenLinks.length)
+// }
 module.exports= mdLinks;
