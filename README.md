@@ -47,7 +47,7 @@ Además de aquellas dependencias propias de nodejs:
 - Module `file system` with `readFile`
 - Module `stats` with `isFile() or isDirectory()`
 - Module `process` with `process.arvg[]`
-- Module `path`
+- Module `commandPath`
 
 Otros:
 - Promises

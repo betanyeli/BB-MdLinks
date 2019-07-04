@@ -1,5 +1,5 @@
 const mdLinks = require('../md-links')
-const readRoute = require('../md-links')
+//const readRoute = require('../md-links')
 
 
 
@@ -15,8 +15,4 @@ describe('mdLinks', () => {
  
 });
 
-// describe('readRoute', () => {
-// it('debería retornar los links de un directorio', async () => {
-//   await expect(readRoute('test/testFolder')).resolves.toEqual([ { } ]);
-//  });
-// });
+//testear si es un archivo md, testear si el archivo no es válido, si el archivo no tiene nada.
