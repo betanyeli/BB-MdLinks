@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 const mdLinks = require('./md-links');
+const chalk = require('chalk');
 const process = require('process');
+const fetch = require('node-fetch'); //links status
+const path = require('path');
 let commandUser = []; //array process vacío.
-// const validateLinks = require('./md-links')
-// const statsUrl = require('./md-links')
+let urlCounter;
+let uniqueLinks;
+let brokenLinks;
+
+
 process.argv.forEach((val, index) => { //  Val es un parámetro obligatorio.
   commandUser.push(process.argv[index])
 })
@@ -13,8 +19,14 @@ process.argv.forEach((val, index) => { //  Val es un parámetro obligatorio.
 
  if( commandUser[3] === '--validate' && commandUser[4] === '--stats'){
     mdLinks(commandUser[2], {validate:true})
-    .then(res=>{
-      console.log("Si validate y stats son verdaderos", res)
+    .then(url=>{
+      
+      urlCounter = url.map(element => element.href);
+      uniqueLinks = [...new Set(urlCounter)].length;
+      brokenLinks = urlCounter.filter(el => el.status > 0 || el.status > 400)
+      console.log(`Links Totales:  ${chalk.bold.blue(urlCounter.length)}.`)
+      console.log(`Links únicos:  ${chalk.bold.green(uniqueLinks)}.`)
+      console.log(`Links rotos:  ${chalk.red(brokenLinks).length}.`)
     })
     .catch(error => {
       console.log(error)
@@ -22,22 +34,33 @@ process.argv.forEach((val, index) => { //  Val es un parámetro obligatorio.
     //llamar validate y stats con su then y catch
  } else if (commandUser[3] === '--validate'){
   mdLinks(commandUser[2], {validate:true})
-  .then(res => { 
-    //console.log(res) mi array de objetos mdLinks
-    
-      //validateLinks(url)
-      console.log("Si validate es true", res)
+  .then(url => { 
+    url.forEach(element=>{
+      //console.log("Estadísticas", element)
+      fetch(element.href)
+        .then(res=>{
+
+          console.log(` Url => ${res.url} | Boolean => ${res.ok} | Code=> ${res.status} | Its Ok? => ${res.statusText}|`)
+
+     
+        })
+    })
+   
+  })
+      
 
     
-  })
+  
   .catch(error => {
     console.log(error)
   })
  } else if(commandUser[3] === '--stats'){
   mdLinks(commandUser[2], {validate:false})
-  .then(res => {
-    console.log("Si stats is true", res)
-    
+  .then(url => { 
+  urlCounter = url.map(element => element.href);
+  uniqueLinks = [...new Set(urlCounter)].length;
+    console.log(`Links Totales:  ${chalk.bold.blue(urlCounter.length)}.`)
+    console.log(`Links únicos:  ${chalk.bold.green(uniqueLinks)}.`)
   })
   .catch(error => {
     console.log(error)
@@ -45,7 +68,7 @@ process.argv.forEach((val, index) => { //  Val es un parámetro obligatorio.
  } else if  (commandUser.length <= 3){
   return mdLinks(commandUser[2]) //si el usuario solo escribe el comando y archivo.
   .then(res => { 
-    console.log("Si no hay opción de un coño", res)
+    console.log("Links encontrados en tu MD", res)
     })
   }
  
