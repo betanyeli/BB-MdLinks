@@ -3,20 +3,19 @@ const mdLinks = require('./md-links');
 const chalk = require('chalk');
 const process = require('process');
 const fetch = require('node-fetch'); //links status
-const path = require('path');
+
 let commandUser = []; //array process vacío.
-let urlCounter;
-let uniqueLinks;
-let brokenLinks;
+let urlCounter; //Var vacía que tomará el valor que se asignará luego
+let uniqueLinks; //Var vacía que tomará el valor que se asignará luego
+let brokenLinks; //Var vacía que tomará el valor que se asignará luego
 
-
+/*forEach de lo que se captura en consola*/
 process.argv.forEach((val, index) => { //  Val es un parámetro obligatorio.
   commandUser.push(process.argv[index])
 })
 
-
-
-
+/*Options user*/
+/*Si el usuario escribe md-links <path/file> '--validate --stats' */
  if( commandUser[3] === '--validate' && commandUser[4] === '--stats'){
     mdLinks(commandUser[2], {validate:true})
     .then(url=>{
@@ -31,7 +30,8 @@ process.argv.forEach((val, index) => { //  Val es un parámetro obligatorio.
     .catch(error => {
       console.log(error)
     })
-    //llamar validate y stats con su then y catch
+   
+    /*Si el usuario escribe md-links <path/file> '--validate */
  } else if (commandUser[3] === '--validate'){
   mdLinks(commandUser[2], {validate:true})
   .then(url => { 
@@ -42,18 +42,15 @@ process.argv.forEach((val, index) => { //  Val es un parámetro obligatorio.
 
           console.log(` Url => ${res.url} | Boolean => ${res.ok} | Code=> ${res.status} | Its Ok? => ${res.statusText}|`)
 
-     
         })
     })
    
   })
-      
-
-    
-  
   .catch(error => {
     console.log(error)
   })
+
+  /*Si el usuario escribe md-links <path/file> '--stats' */
  } else if(commandUser[3] === '--stats'){
   mdLinks(commandUser[2], {validate:false})
   .then(url => { 
@@ -65,8 +62,10 @@ process.argv.forEach((val, index) => { //  Val es un parámetro obligatorio.
   .catch(error => {
     console.log(error)
   })
+
+  /*Si el usuario escribe md-links <path/file> */
  } else if  (commandUser.length <= 3){
-  return mdLinks(commandUser[2]) //si el usuario solo escribe el comando y archivo.
+  return mdLinks(commandUser[2])
   .then(res => { 
     console.log("Links encontrados en tu MD", res)
     })

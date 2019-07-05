@@ -19,12 +19,13 @@ describe('mdLinks', () => {
 );
    });
 
-   it('debería retornar los links de un directorio', async () => {
-    await expect(mdLinks('test/testFolder', {validate:true})).resolves.toEqual(`Links Totales:  1.
-    Links únicos:  1.
-    Links rotos:  0.`);
+   it('debería retornar msj de error si el archivo no es .md', async () => {
+    await expect(mdLinks('test/testFolder/main.js')).rejects.toThrow("Debes escoger un archivo con extensión MD");
    });
  
+   it('debería retornar msj de error si no colocó ruta o archivo', async () => {
+    await expect(mdLinks()).rejects.toThrow("INGRESA UNA RUTA VÁLIDA!");
+   });
 });
 
 //testear si es un archivo md, testear si el archivo no es válido, si el archivo no tiene nada.
