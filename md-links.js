@@ -108,45 +108,6 @@ const readRoute = (route) => {
 }
 
 
-
-// fetch llamado desde el index.js // está demás aquí.
- 
-// const validateLinks = (url) => {
-//    return new Promise((resolve, reject) => {
-//    url.forEach(element => {  
-//   fetch(element)
-//   .then(res => { 
-//     let urlArray= [];
-//                         urlArray.push({
-//                           Url: res.url,
-//                           Text: element.text,
-//                           Status:res.status,
-//                           InfoStatus: res.statusText
-//                         })
-
-//                         resolve(urlArray)
- 
-//   })  
-//   .catch((err)=> {
-//     reject(err)
-// })           
-// }) // fin forEach
-//    })
-
-// }//fin función validateLinks
-
-
-
-/*Función que muestra Links totales y únicos, ahora llamada desde index.js */
-// const statsUrl = (url) => {
-//   const urlCounter = url.map(element => element.href);
-//   const brokenLinks = url.filter(el => el.status < 0 || el.status > 400);
-//   const uniqueLinks = [...new Set(urlCounter)].length;
-//   // console.log(`Links Totales:  ${chalk.bold.blue(urlCounter.length)}.`)
-//   // console.log(`Links únicos:  ${chalk.bold.green(uniqueLinks)}.`)
-//   // console.log(`Links rotos:  ${chalk.red(brokenLinks).length}.`)
-// }
-
 module.exports= mdLinks;
 
 
