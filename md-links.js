@@ -109,5 +109,3 @@ const readRoute = (route) => {
 
 
 module.exports= mdLinks;
-
-

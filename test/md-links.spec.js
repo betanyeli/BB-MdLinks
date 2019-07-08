@@ -1,5 +1,6 @@
 const mdLinks = require('../md-links')
-//const readRoute = require('../md-links')
+const validateLinks = require('../md-links')
+
 
 
 
@@ -26,6 +27,20 @@ describe('mdLinks', () => {
    it('debería retornar msj de error si no colocó ruta o archivo', async () => {
     await expect(mdLinks()).rejects.toThrow("INGRESA UNA RUTA VÁLIDA!");
    });
+
 });
 
+
+// describe('validateLinks', () => {
+
+//   it('debería retornar array de objetos con info de url', async() => {
+//    await expect(validateLinks('test/testFolder/test.md')).resolves.toEqual([ { Url: 'https://www.facebook.com/',
+//    Text: 'http.get',
+//    Status: 200,
+//    InfoStatus: 'OK' } ]
+// );
+//   });
+
+
+// });
 //testear si es un archivo md, testear si el archivo no es válido, si el archivo no tiene nada.
